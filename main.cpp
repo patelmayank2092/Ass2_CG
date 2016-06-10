@@ -11,7 +11,7 @@ using std::vector;
 
 #include"matrix_generator.h"
 
-
+#include "solver.h"
 
 //#include"Colsamm.h"
 //using namespace ::_COLSAMM_;
@@ -22,14 +22,20 @@ using std::vector;
 
 int main(int argc, char *argv[]){
 
-
-
     real delta = std::stod(argv[1]);
     long double eph= std::stold(argv[2]);
 
+    intg ver = 1039;
+
+    Initialisation init;
+
     Matrix_Generator M;
-    M.generate();
-    M.inversePower(eph);
+    init=M.generate();
+
+    Solver S(M,ver,init);
+    S.inversePower(eph);
+
+    //M.inversePower(eph);
 
  return 0;
 }

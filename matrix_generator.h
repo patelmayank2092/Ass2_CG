@@ -35,14 +35,6 @@ class Matrix_Generator
    public:
     Matrix_Generator();
 
-    vector<intg> rowM_;
-    vector<intg> colM_;
-    vector<real> valueM_;
-
-    vector<intg> rowA_;
-    vector<intg> colA_;
-    vector<real> valueA_;
-
     vector<vector<double>> Laplacian_Stencil ;
     vector<vector<double>> Helmholtz_Stencil ;
 
@@ -61,7 +53,7 @@ class Matrix_Generator
 
      void print_mass_matrix();
 
-    void generate();
+    Initialisation& generate();
 
     void fillMassVector(void);
 
@@ -69,43 +61,7 @@ class Matrix_Generator
 
     void printVector(void);
 
- //-------------------------------------- CG ------------------------
 
-  vector<real>& CGprocess(long double &eph);
-
-    vector<real> load_vec;         //load vec
-    vector<real> init_vec;
-    vector<real> res_vec;
-    vector<real> stiff_vec;
-    vector<real> dir_vec;
-    vector<real> Adk;
-    vector<real> xk_new;
-    vector<real> rk_new;
-     vector<real> dir_new;
-     vector<real> u_app;
-     vector<real> u_h;
-
-
-    void setLoad(void);
-    void setStiffness(void);
-    void residualandDirection(void);
-    real normResidual(void);
-    real setRo(void);
-    real stepSize(real &ro);
-    void init_new(real &tk);
-    void res_new(real &tk);
-    real setBeta(real &ro);
-    void setNewdirection(real &beta);
-    void CGprint(vector<real> &data);
-    void refreshVector(void);
-
-//------------------------------------- inverse power iteration ----------
-
-void inversePower(long double &eph);
-vector<real>& U_appNormalize(vector<real>&u_app);
-real norm(vector<real> &normVec);
-real computeEV(vector<real> &u_h);
-void storeFile(vector<real> &u_h,real &ev);
 
 };
 

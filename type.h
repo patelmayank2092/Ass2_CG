@@ -2,7 +2,9 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-typedef long double real;
+typedef double real;
 typedef int intg;
+
+
 
 #endif
