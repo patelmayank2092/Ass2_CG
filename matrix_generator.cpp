@@ -9,7 +9,7 @@ using namespace ::_COLSAMM_;
 
 Matrix_Generator::Matrix_Generator(){
 
-    init_vec.resize(numPoint,1);
+    init_vec.resize(numPoint,(1.0/sqrt(numPoint)));
     load_vec.resize(numPoint,0);
     stiff_vec.resize(numPoint,0);
     res_vec.resize(numPoint,0);
@@ -274,8 +274,8 @@ vector<real>& Matrix_Generator::CGprocess(long double &eph){
 
 
 //step:1   Input
-    //setLoad();
-    //setStiffness();
+    setLoad();
+    setStiffness();
 
 //step:2 Compute residual and direction vector
 
@@ -287,6 +287,7 @@ vector<real>& Matrix_Generator::CGprocess(long double &eph){
     real ro=0.0,tk=0.0,beta=0.0;
     intg i=1;
 
+ //   while(i<2){
   while(resNorm>eph){
     //cout<<"Number of iteration is...."<<i<<endl;
         ro = setRo();
@@ -300,15 +301,19 @@ vector<real>& Matrix_Generator::CGprocess(long double &eph){
         setNewdirection(beta);
         resNorm = normResidual();
 
-       // cout<<"Res norm is..."<<resNorm<<endl;
+        cout<<"Res norm is..."<<resNorm<<endl;
 
         refreshVector();
-       // cout<<"\n"<<endl;
+       // cout<<"init vec inside loop "<<endl;
+      //  CGprint(init_vec);
   i++;
   }
+//  cout<<"init vec outside loop "<<endl;
+//   CGprint(init_vec);
 //cout<<"CG is done"<<endl;
 return init_vec;
 }
+
 
 
 void Matrix_Generator::setLoad(void){
@@ -347,6 +352,7 @@ stiff_vec.resize(numPoint,0);
  }
 }
 
+
 void Matrix_Generator::residualandDirection(void){
 
  real val=0.0;
@@ -368,10 +374,11 @@ real Matrix_Generator::normResidual(void){
         for(int i=0;i<numPoint;i++){
             norm+= res_vec[i]*res_vec[i];
         }
-            resultNorm = sqrt(norm/res_vec.size());
+            resultNorm = sqrt(norm);
 
 return resultNorm;
 }
+
 
 real Matrix_Generator::setRo(void){
  //--------------------------- Adk ------------------------
@@ -400,6 +407,7 @@ real Matrix_Generator::setRo(void){
 return ro;
 }
 
+
 real Matrix_Generator::stepSize(real &ro){
 
     real val=0.0,tk=0.0;
@@ -408,14 +416,13 @@ real Matrix_Generator::stepSize(real &ro){
     for(intg i=0;i<numPoint;i++){
         val += res_vec[i]*dir_vec[i];
       }
-    tk = (-1)*(val/ro);
+    tk = (-1.0)*(val/ro);
 
 return tk;
 }
 
-void Matrix_Generator::init_new(real &tk){
 
- real val=0.0;
+void Matrix_Generator::init_new(real &tk){
 
     for(int i=0;i<numPoint;i++){
 
@@ -427,8 +434,8 @@ void Matrix_Generator::init_new(real &tk){
 
 }
 
+
 void Matrix_Generator::res_new(real &tk){
-    real val=0.0;
 
        for(int i=0;i<numPoint;i++){
 
@@ -456,7 +463,6 @@ return beta;
 
 void Matrix_Generator::setNewdirection(real &beta){
 
-    real val=0.0;
        for(int i=0;i<numPoint;i++){
 
            dir_new[i] = (-1.0)*rk_new[i] +  beta*dir_vec[i];
@@ -478,8 +484,8 @@ void Matrix_Generator::refreshVector(void){
 
 void Matrix_Generator::CGprint(vector<real> &data){
 
-    for(int i=0;i<10;i++){
-        cout<<data[i]<<endl;
+    for(int i=0;i<5;i++){
+        cout<<setprecision(10)<<data[i]<<endl;
     }
 
 }
@@ -490,29 +496,37 @@ void Matrix_Generator::CGprint(vector<real> &data){
 //----------------------------- inverse power iteration -----------------
 void Matrix_Generator::inversePower(long double &eph){
 
- real ev=0.0,ev_old=0.0;
- int i=0;
+ real ev=2.0,ev_old=1.0;
+ int i=1;
  //--------------- first initialize init_vec with 1 value ----------
- this->setLoad();
- this->setStiffness();
+// this->setLoad();
+// this->setStiffness();
 
- while(i<20)
-    //while((abs((ev-ev_old)/ev_old))<1e-10)
+ //while(i<3)
+    while(fabs((ev-ev_old)/ev_old)>(1e-10))
     {
             ev_old = ev;
-            ev = 0;
+            //ev = 0;
 
             u_app = this->CGprocess(eph);
-           // CGprint(u_app);
+            //CGprint(u_app);
             u_h = this->U_appNormalize(u_app);
-           // CGprint(u_app);
+            //CGprint(u_h);
             ev = this-> computeEV(u_h);
 
-            cout<<"Eigen value is..."<<ev<<endl;
+            cout<<"////////////////////////////////////////////"<<endl;
+            //cout<<setprecision(10) <<"\n";
+            cout<<"    Number of iteration :   "<<setprecision(10)<<i<<"\n";
+            cout<<"    New Eigen value :       "<<setprecision(10)<<ev<<"\n";
+            cout<<"    Old Eigen value :       "<<setprecision(10)<<ev_old<<"\n";
+            //cout<<"    Relative error :        "<<setprecision(10)<<(((ev-ev_old))/ev_old)<<"\n";
+            cout<<"    Fabs Relative error :   "<<setprecision(10)<<fabs(((ev-ev_old))/ev_old)<<"\n";
+            cout<<"////////////////////////////////////////////\n \n"<<endl;
+
     i++;
     }
 
-    storeFile(u_h);
+    storeFile(u_app,ev);
 
 }
 
@@ -520,7 +534,7 @@ inline
 vector<real>& Matrix_Generator::U_appNormalize(vector<real>&u_app){
 
         real norm1 = this->norm(u_app);
-        cout<<norm1<<endl;
+        //cout<<norm1<<endl;
         for(int i=0;i<numPoint;i++){
             u_h[i]= u_app[i]/norm1;
         }
@@ -561,20 +575,28 @@ return finalVal;
 }
 
 inline
-void Matrix_Generator::storeFile(vector<real> &u_h){
+void Matrix_Generator::storeFile(vector<real> &u_h,real &ev){
 
     ofstream em("eigenmode.txt");
+    ofstream eigenv("eigenValue.txt");
+
     if(em.is_open())
     {
       for(intg j=0;j<numPoint;j++)
       {
-          em<<i.V[j].x<<"\t"<<i.V[j].y<<"\t"<<u_h[j]<<"\n";
+          em<<i.V[j].x<<"\t"<<i.V[j].y<<"\t"<<setprecision(10)<<u_h[j]<<"\n";
       }
    }
   else {cout<<"unable to open file"<<endl;}
 
 em.close();
+///---------------------------------- EV -------------
+    if(eigenv.is_open()){
 
+        eigenv<<setprecision(10)<<ev;
+    }
+    else throw "unable to open eigenValue.txt";
+eigenv.close();
 }
 
 

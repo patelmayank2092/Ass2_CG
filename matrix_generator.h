@@ -21,6 +21,11 @@ using std::map;
 using std::ifstream;using std::ofstream;
 
 #include<cmath>
+#include<math.h>
+#include<stdlib.h>
+
+#include <iomanip>
+using  std::setprecision;
 
 #include"Vertex.h"
 #include"initialisation.h"
@@ -100,7 +105,7 @@ void inversePower(long double &eph);
 vector<real>& U_appNormalize(vector<real>&u_app);
 real norm(vector<real> &normVec);
 real computeEV(vector<real> &u_h);
-void storeFile(vector<real> &u_h);
+void storeFile(vector<real> &u_h,real &ev);
 
 };
 
