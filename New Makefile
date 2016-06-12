@@ -1,0 +1,23 @@
+
+CFLAG = -c -O3 -std=c++11 
+
+all:	initialisation matrix_generator vector solver main
+
+initialisation:	initialisation.h initialisation.cpp type.h Vertex.h
+	g++ $(CFLAG) initialisation.cpp -o initialisation.o
+
+matrix_generator: matrix_generator.h matrix_generator.cpp type.h Vertex.h initialisation.h ./myColsamm/Source/*.h
+	g++ -c -I ./myColsamm/Source/ matrix_generator.cpp -o matrix_generator.o
+
+vector:	vector.h type.h vector.cpp
+	g++ $(CFLAG) vector.cpp -o vector.o
+
+solver:	solver.h solver.cpp initialisation.h matrix_generator.h vector.h type.h Vertex.h
+	g++ $(CFLAG) solver.cpp -o solver.o
+
+main:	main.cpp
+	g++ -O3 -std=c++11 main.cpp initialisation.o matrix_generator.o vector.o solver.o -o result
+
+clean:
+	rm *.o
+	rm result  	   	
