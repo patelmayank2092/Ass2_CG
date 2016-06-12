@@ -24,13 +24,15 @@ int main(int argc, char *argv[]){
 
     real delta = std::stod(argv[1]);
     long double eph= std::stold(argv[2]);
-
-    intg ver = 1039;
+    string filename=argv[3];
 
     Initialisation init;
 
     Matrix_Generator M;
-    init=M.generate();
+    init=M.generate(filename,delta);
+
+   intg ver=init.numPoint;
+   cout<<ver<<endl;
 
     Solver S(M,ver,init);
     S.inversePower(eph);

@@ -1,7 +1,6 @@
 #include"matrix_generator.h"
 
-#define tri_elem 1039
-#define numPoint 1039
+//#define numPoint 1039
 
 
 #include"Colsamm.h"
@@ -72,7 +71,7 @@ void Matrix_Generator::local_stiffness_matrix(face f)
    face_num++;
 
 
-   global_stiffness_matrix.resize(1039);
+   global_stiffness_matrix.resize(numPointMG);
 
    global_stiffness_matrix[f.v1][f.v1] += my_local_stiffness_matrix[0][0];
    global_stiffness_matrix[f.v2][f.v2] += my_local_stiffness_matrix[1][1];
@@ -92,7 +91,7 @@ void Matrix_Generator::local_stiffness_matrix(face f)
    cout << global_stiffness_matrix[f.v1][f.v1] << '\t' <<  global_stiffness_matrix[f.v1][f.v2] << '\t' << global_stiffness_matrix[f.v1][f.v3] <<endl;
    */
 
-   global_mass_matrix.resize(1039);
+   global_mass_matrix.resize(numPointMG);
 
    global_mass_matrix[f.v1][f.v1] +=  my_local_mass_matrix[0][0];
    global_mass_matrix[f.v2][f.v2] +=  my_local_mass_matrix[1][1];
@@ -118,8 +117,8 @@ void Matrix_Generator::print_stiffness_matrix()
       ofstream file_A("A.txt");
       if(file_A.is_open())
       {
-      for(size_t i=0;i<1039;i++)
-        for(size_t j=0;j<1039;j++)
+      for(size_t i=0;i<numPointMG;i++)
+        for(size_t j=0;j<numPointMG;j++)
         {
         if(global_stiffness_matrix[i][j]!=0)
             file_A<<i<<"\t"<< j<<"\t"<<global_stiffness_matrix[i][j]<<"\n";
@@ -136,8 +135,8 @@ void Matrix_Generator::print_mass_matrix()
       ofstream file_M("M.txt");
       if(file_M.is_open())
       {
-      for(size_t i=0;i<1039;i++)
-        for(size_t j=0;j<1039;j++)
+      for(size_t i=0;i<numPointMG;i++)
+        for(size_t j=0;j<numPointMG;j++)
         {
         if(global_mass_matrix[i][j]!=0)
         file_M<<i<<"\t"<< j<<"\t"<<global_mass_matrix[i][j]<<"\n";
@@ -149,10 +148,13 @@ file_M.close();
 }
 
 
-Initialisation& Matrix_Generator::generate()
+Initialisation& Matrix_Generator::generate(string &filename, real &delta)
 {
-    i.process();
+    i.process(filename,delta);
     //int count =0;
+    numPointMG=i.numPoint;
+    cout<<numPointMG<<endl;
+
     for(auto iter=i.F.begin();iter<i.F.end();++iter)
         {
 

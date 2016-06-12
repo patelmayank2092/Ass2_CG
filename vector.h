@@ -16,7 +16,7 @@ private:
 
 
 public:
-       vector<real> data;
+  vector<real> data;
        Vector();
        Vector operator-(Vector &vec);
        real operator*(Vector &vec);

@@ -33,8 +33,9 @@ using  std::setprecision;
 class Matrix_Generator
 {
    public:
-    Matrix_Generator();
 
+    Matrix_Generator();
+    intg numPointMG;
     vector<vector<double>> Laplacian_Stencil ;
     vector<vector<double>> Helmholtz_Stencil ;
 
@@ -53,7 +54,7 @@ class Matrix_Generator
 
      void print_mass_matrix();
 
-    Initialisation& generate();
+    Initialisation& generate(string &filename,real &delta);
 
     void fillMassVector(void);
 

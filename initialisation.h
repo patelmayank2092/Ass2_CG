@@ -34,12 +34,13 @@ class Initialisation{
     vector<real> K;
     vertex v;
     face f;
+    intg numPoint;
 
 
     Initialisation();
-    void process(void);
-    void readFile(void);
-    void k_waveNumber(void);
+    void process(string &filename,real &delta);
+    void readFile(string &filename);
+    void k_waveNumber(real &delta);
 };
 
 #endif  // INITIALISATION_H
